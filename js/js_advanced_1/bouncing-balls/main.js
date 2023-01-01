@@ -3,6 +3,32 @@
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 
+// move the hole ball
+// 可以给document添加EventListener, 不能给cavans添加EventListner;
+document.addEventListener("keydown", function(e){
+   var key = e.key;
+   var r = 0.5;
+   var stride = r*hole.size;
+   switch(key){
+      case "ArrowUp":
+         hole.y-stride<=hole.size?hole.y=hole.size:hole.y -= stride;
+         break;
+      case "ArrowDown":
+         hole.y+stride>=height-hole.size?hole.y=height-hole.size:hole.y += stride;
+         break;
+      case "ArrowLeft":
+         hole.x-stride<=hole.size?hole.size:hole.x -= stride;
+         break;
+      case "ArrowRight":
+         hole.x+stride>=width-hole.size?hole.x=width-hole.size:hole.x += stride;
+         break;
+      case "Control":
+         console.log(balls);
+         break;
+   };
+   console.log(e.key);
+},false);
+
 const width = canvas.width = window.innerWidth;
 const height = canvas.height = window.innerHeight;
 
@@ -13,7 +39,6 @@ function random(min, max) {
 }
 
 // function to generate random RGB color value
-
 function randomRGB() {
   return `rgb(${random(0, 255)},${random(0, 255)},${random(0, 255)})`;
 }
@@ -27,64 +52,7 @@ function Shape(x, y, velX, velY, exists){
    this.exists = exists;
 }
 
-Shape.prototype.getX = function(){
-   console.log('x is ' + this.x);
-}
 
-// class Ball {
-
-//    constructor(x, y, velX, velY, color, size) {
-//       this.x = x;
-//       this.y = y;
-//       this.velX = velX;
-//       this.velY = velY;
-//       this.color = color;
-//       this.size = size;
-//    }
-
-//    draw() {
-//       ctx.beginPath();
-//       ctx.fillStyle = this.color;
-//       ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
-//       ctx.fill();
-//    }
-
-//    update() {
-//       if ((this.x + this.size) >= width) {
-//          this.velX = -(Math.abs(this.velX));
-//       }
-
-//       if ((this.x - this.size) <= 0) {
-//          this.velX = Math.abs(this.velX);
-//       }
-
-//       if ((this.y + this.size) >= height) {
-//          this.velY = -(Math.abs(this.velY));
-//       }
-
-//       if ((this.y - this.size) <= 0) {
-//          this.velY = Math.abs(this.velY);
-//       }
-
-//       this.x += this.velX;
-//       this.y += this.velY;
-//    }
-
-//    collisionDetect() {
-//       for (const ball of balls) {
-//          if (!(this === ball)) {
-//             const dx = this.x - ball.x;
-//             const dy = this.y - ball.y;
-//             const distance = Math.sqrt(dx * dx + dy * dy);
-
-//             if (distance < this.size + ball.size) {
-//               ball.color = this.color = randomRGB();
-//             }
-//          }
-//       }
-//    }
-
-// }
 
 // function Ball
 class Ball {
@@ -137,7 +105,10 @@ class Ball {
                   if(this.name === "hole"){
                      console.log("Index of the ball is ", index);
                      balls.splice(index,1);
-                     console.log("balls left" + balls.length);
+                     const h1 = document.querySelector("h1");
+                     h1.innerHTML = "Bouncing balls left " + (balls.length-1);
+                     console.log(h1);
+                     console.log("balls left " + balls.length);
                   }
                   
                }
@@ -151,19 +122,21 @@ Ball.prototype = Ball;
 Ball.prototype.__proto__ = Shape.prototype;
 
 
-
 const balls = [];
 
 function BlackHole(x, y, velX, velY, exists){
    Shape.call(this, x, y, velX, velY, exists);
 
 }
-BlackHole.prototype = Object.create(Shape.prototype);
-BlackHole.prototype.constructor = BlackHole;
+
+BlackHole.prototype = BlackHole;
+BlackHole.prototype.__proto__ = Shape.prototype;
+
+
 const blackhole = new BlackHole(100, 100, 10, 10, true);
 
 //test
-const hole = new Ball(100,100,10,10,true,randomRGB(),100);
+const hole = new Ball(500,500,0,0,true,randomRGB(),100);
 hole.name = "hole";
 
 
