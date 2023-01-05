@@ -3,31 +3,6 @@
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 
-// move the blackhole
-// 可以给document添加EventListener, 不能给cavans添加EventListner;
-document.addEventListener("keydown", function(e){
-   var key = e.key;
-   var r = 0.5;
-   var stride = r*blackhole.size;
-   switch(key){
-      case "ArrowUp":
-         blackhole.y-stride<=blackhole.size?blackhole.y=blackhole.size:blackhole.y -= stride;
-         break;
-      case "ArrowDown":
-         blackhole.y+stride>=height-blackhole.size?blackhole.y=height-blackhole.size:blackhole.y += stride;
-         break;
-      case "ArrowLeft":
-         blackhole.x-stride<=blackhole.size?blackhole.size:blackhole.x -= stride;
-         break;
-      case "ArrowRight":
-         blackhole.x+stride>=width-blackhole.size?blackhole.x=width-blackhole.size:blackhole.x += stride;
-         break;
-      case "Control":
-         console.log(balls);
-         break;
-   };
-   console.log(e.key);
-},false);
 
 const width = canvas.width = window.innerWidth;
 const height = canvas.height = window.innerHeight;
@@ -148,16 +123,21 @@ function BlackHole(x, y, velX, velY, size, exists){
 
    this.prototype.draw = function(){
       ctx.beginPath();
-      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      ctx.strokeStyle = "white";
+      ctx.lineWidth = 3;
       ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
-      ctx.fill();
       ctx.stroke();
+      // ctx.beginPath();
+      // ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      // ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+      // ctx.fill();
+      // ctx.stroke();
 
-      ctx.beginPath();
-      ctx.fillStyle = 'rgba(0,0,0,1)';
-      ctx.arc(this.x, this.y, 0.85*this.size, 0, 2 * Math.PI);
-      ctx.fill();
-      ctx.stroke();
+      // ctx.beginPath();
+      // ctx.fillStyle = 'rgba(0,0,0,1)';
+      // ctx.arc(this.x, this.y, 0.85*this.size, 0, 2 * Math.PI);
+      // ctx.fill();
+      // ctx.stroke();
 
    };
 
@@ -204,14 +184,67 @@ function BlackHole(x, y, velX, velY, size, exists){
             }
          }
       }
-   }
+   };
+
+   this.prototype.checkBounds = function () {
+      if (this.x + this.size >= width) {
+         this.x -= this.size;
+      }
+      
+      if (this.x - this.size <= 0) {
+         this.x += this.size;
+      }
+      
+      if (this.y + this.size >= height) {
+         this.y -= this.size;
+      }
+      
+      if (this.y - this.size <= 0) {
+         this.y += this.size;
+      }
+      
+   };
+
+   this.prototype.setControl = function(){
+      document.addEventListener("keydown", function(e){
+         var key = e.key;
+         var r = 0.5;
+         var stride = r*blackhole.size;
+         switch(key){
+            case "w":
+            case "W":
+            case "ArrowUp":
+               blackhole.y-stride<=blackhole.size?blackhole.y=blackhole.size:blackhole.y -= stride;
+               break;
+            case "s":
+            case "S":
+            case "ArrowDown":
+               blackhole.y+stride>=height-blackhole.size?blackhole.y=height-blackhole.size:blackhole.y += stride;
+               break;
+            case "a":
+            case "A":
+            case "ArrowLeft":
+               blackhole.x-stride<=blackhole.size?blackhole.size:blackhole.x -= stride;
+               break;
+            case "d":
+            case "D":
+            case "ArrowRight":
+               blackhole.x+stride>=width-blackhole.size?blackhole.x=width-blackhole.size:blackhole.x += stride;
+               break;
+            case "Control":
+               console.log(balls);
+               break;
+         };
+         console.log(e.key);
+      },false);
+   };
 }
 BlackHole.prototype = BlackHole;
 BlackHole.prototype.__proto__ = Shape.prototype;
-const blackhole = new BlackHole(500, 500, 0, 0, 100, true);
+const blackhole = new BlackHole(random(0,width),random(0,height), 10, 10, 50, true);
 balls.push(blackhole);
 
-
+blackhole.setControl();
 function loop() {
    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
    ctx.fillRect(0, 0,  width, height);
@@ -221,7 +254,8 @@ function loop() {
       ball.update();
       ball.collisionDetect();
    }
-
+   
+   // blackhole.checkBounds();
    blackhole.draw();
    blackhole.update();
    requestAnimationFrame(loop);
